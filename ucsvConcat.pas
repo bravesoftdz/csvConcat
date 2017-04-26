@@ -9,7 +9,7 @@ type
     function WriteOutputFile: Boolean;
   end;
 
-  function NewCsvConcat(aFilename: string='Filename.csv'): IcsvConcat;
+  function NewCsvConcat(aFilename: string=''): IcsvConcat;
 
 implementation
 uses System.SysUtils, System.Classes, Spring.Collections;
@@ -29,12 +29,14 @@ type
     function WriteOutputFile: Boolean;
   end;
 
-function NewCsvConcat(aFilename: string='Filename.csv'): IcsvConcat;
+function NewCsvConcat(aFilename: string=''): IcsvConcat;
 begin
   result := TcsvConcat.Create(aFilename);
 end;
 
 constructor TcsvConcat.Create(aoutFilename: string);
+var
+  wrkSplit: TArray<string>;
 begin
   inherited Create;
   fOutputFilename := aoutFilename;
@@ -43,6 +45,11 @@ begin
   fCurrentDir := GetCurrentDir;
   if fCurrentDir.EndsWith('\') then
     fCurrentDir := fCurrentDir.Remove(length(fCurrentDir));
+  if fOutputFilename.IsEmpty then
+  begin
+    wrkSplit := fCurrentDir.Split(['\']);
+    fOutputFilename := format('%s.csv',[wrkSplit[length(wrkSplit)-1]]);
+  end;
 end;
 
 destructor TcsvConcat.Destroy;
